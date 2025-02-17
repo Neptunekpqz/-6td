@@ -25,6 +25,7 @@
             padding: 0;
             height: 100%;
             font-family: 'Sectar', sans-serif;
+            cursor: none; /* Hide default cursor */
         }
 
         body {
@@ -48,6 +49,23 @@
             height: 100%;
             object-fit: cover;
             z-index: -1;
+        }
+
+        /* Custom Cursor Particle */
+        .cursor-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #ff1493;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 10px #ff69b4, 0 0 20px #ff69b4;
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(2); }
         }
 
         /* Music Button */
@@ -82,6 +100,18 @@
             z-index: 999;
         }
 
+        /* Discord Text */
+        .discord-text {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-family: 'Minecraftia', sans-serif;
+            color: #ff1493;
+            font-size: 20px;
+            z-index: 999;
+        }
+
+        /* Social Links */
         .socials {
             margin-top: 20px;
             display: flex;
@@ -93,13 +123,7 @@
         /* Rainbow Text Glow */
         @keyframes rainbowGlow {
             0% { text-shadow: 0 0 10px red, 0 0 20px orange, 0 0 30px yellow, 0 0 40px green, 0 0 50px blue, 0 0 60px indigo, 0 0 70px violet; }
-            14% { text-shadow: 0 0 10px orange, 0 0 20px yellow, 0 0 30px green, 0 0 40px blue, 0 0 50px indigo, 0 0 60px violet, 0 0 70px red; }
-            28% { text-shadow: 0 0 10px yellow, 0 0 20px green, 0 0 30px blue, 0 0 40px indigo, 0 0 50px violet, 0 0 60px red, 0 0 70px orange; }
-            42% { text-shadow: 0 0 10px green, 0 0 20px blue, 0 0 30px indigo, 0 0 40px violet, 0 0 50px red, 0 0 60px orange, 0 0 70px yellow; }
-            57% { text-shadow: 0 0 10px blue, 0 0 20px indigo, 0 0 30px violet, 0 0 40px red, 0 0 50px orange, 0 0 60px yellow, 0 0 70px green; }
-            71% { text-shadow: 0 0 10px indigo, 0 0 20px violet, 0 0 30px red, 0 0 40px orange, 0 0 50px yellow, 0 0 60px green, 0 0 70px blue; }
-            85% { text-shadow: 0 0 10px violet, 0 0 20px red, 0 0 30px orange, 0 0 40px yellow, 0 0 50px green, 0 0 60px blue, 0 0 70px indigo; }
-            100% { text-shadow: 0 0 10px red, 0 0 20px orange, 0 0 30px yellow, 0 0 40px green, 0 0 50px blue, 0 0 60px indigo, 0 0 70px violet; }
+            100% { text-shadow: 0 0 10px violet, 0 0 20px red, 0 0 30px orange, 0 0 40px yellow, 0 0 50px green, 0 0 60px blue, 0 0 70px indigo; }
         }
 
         .socials a {
@@ -112,17 +136,6 @@
 
         .socials a:hover {
             color: #ff69b4;
-        }
-
-        /* Discord Text at the top right */
-        .discord-text {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            font-family: 'Minecraftia', sans-serif;
-            color: #ff1493;  /* Matching the music button color */
-            font-size: 20px;
-            z-index: 999;
         }
     </style>
 </head>
@@ -142,6 +155,11 @@
         Volume: <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" onchange="adjustVolume()">
     </div>
 
+    <!-- Discord Text -->
+    <div class="discord-text">
+        discord.gg/cheetzz
+    </div>
+
     <!-- Social Links -->
     <div class="socials">
         <a href="https://www.instagram.com/xsfaim" target="_blank">Instagram</a>
@@ -150,25 +168,50 @@
         <a href="https://discord.gg/cheetzz" target="_blank">Valorant sauce</a>
     </div>
 
-    <!-- Discord Text -->
-    <div class="discord-text">
-        discord.gg/cheetzz
-    </div>
-
     <script>
         // Music functionality
-        let music = new Audio('ike.mp3'); // Ensure the correct path to the audio file
+        let music = new Audio('ike.mp3'); 
         let musicBtn = document.querySelector('.music-btn');
         let isPlaying = false;
 
-        // Toggle music playback
         function toggleMusic() {
             if (isPlaying) {
                 music.pause();
                 musicBtn.textContent = 'Play Music';
-                isPlaying = false; // Update isPlaying to false when paused
+                isPlaying = false;
             } else {
                 music.play().then(() => {
                     musicBtn.textContent = 'Pause Music';
-                    isPlaying = true; // Update isPlaying to true when playing
-   
+                    isPlaying = true;
+                }).catch((err) => {
+                    console.error('Error playing audio:', err);
+                    alert("There was an issue playing the music.");
+                });
+            }
+        }
+
+        function adjustVolume() {
+            let volume = document.getElementById("volumeSlider").value;
+            music.volume = volume;
+        }
+
+        // Cursor Particle Effect
+        document.addEventListener("mousemove", (event) => {
+            let particle = document.createElement("div");
+            particle.classList.add("cursor-particle");
+            document.body.appendChild(particle);
+
+            particle.style.left = `${event.clientX}px`;
+            particle.style.top = `${event.clientY}px`;
+
+            setTimeout(() => {
+                particle.remove();
+            }, 500);
+        });
+
+        // Ensure volume is set on load
+        music.volume = document.getElementById("volumeSlider").value;
+    </script>
+
+</body>
+</html>
